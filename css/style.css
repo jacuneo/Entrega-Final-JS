@@ -1,0 +1,32 @@
+.text-center {
+    padding: 0.5em 1.2em;
+}
+
+.imgProductos {
+    height: 250px;
+    object-fit: contain;
+    margin-top: 1rem;
+}
+
+.card {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem;
+    text-align: center;
+    background-color: #c6cbcd;
+    border: 2px solid;
+    border-color: #09435a;
+}
+
+.colorBoton {
+    color: #09435a;
+    padding: 0.5em 1.2em;
+    border: 2px solid;
+    border-color: #09435a;
+    transition: all 1s ease;
+}
+
+.colorBoton:hover {
+    background: #09435a;
+    color: #fff
+}
