@@ -138,7 +138,7 @@ vaciarCarrito.addEventListener("click", () => {
     eliminarTodoElCarrito();
 })
 
-//Función para eliminar todo el contenido del carrito: 
+// Función para eliminar todo el contenido del carrito: 
 
 const eliminarTodoElCarrito = () => {
     carrito = []; // carrito es ahora un array vacío
@@ -147,6 +147,21 @@ const eliminarTodoElCarrito = () => {
     //Limpio el localStorage: 
     localStorage.clear();
 }
+
+// Usar la libreria sweet alert para mostrar una alerta de que se vació el carrito
+
+const botonVaciar = document.getElementById("vaciarCarrito");
+botonVaciar.addEventListener("click", () => {
+    swal.fire( {
+        title: "Ahora tu carrito está vacío",
+        text: "Que lástima nos da",
+        icon: "warning",
+        imageUrl: "https://picsum.photos/200",
+        confirmButtonText: "Seguir comprando",
+        confirmButtonColor: "#d33",
+        background: "#b4b4b4",
+    })
+});
 
 //Mensaje con monto total de la compra 
 
