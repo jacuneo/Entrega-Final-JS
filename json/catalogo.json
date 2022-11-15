@@ -1,0 +1,6 @@
+[
+    {"id":"001", "nombre":"Chomba", "precio":9000, "img":"../img/chomba_hombre_negro.png"},
+    {"id":"002", "nombre":"Hoodie", "precio":10000, "img":"../img/hoodie_hombre_negro.png"},
+    {"id":"003", "nombre":"Polera", "precio":7000, "img":"../img/polera_hombre_negro.png"},
+    {"id":"004", "nombre":"Remera", "precio":4500, "img":"../img/remera_hombre_negro.png"}
+]
