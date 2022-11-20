@@ -1,25 +1,3 @@
-// Clase para crear objetos:
-
-class Producto {
-    constructor(id, nombre, precio, img) {
-        this.id = id;
-        this.nombre = nombre; 
-        this.precio = precio;
-        this.img = img;
-        this.cantidad = 1;  // cada vez que creo un objeto siempre va a haber 1 unidad
-    }
-}
-
-const chomba = new Producto(001, "Chomba", 9000, "/img/chomba_hombre_negro.png");
-const hoodie = new Producto(002, "Hoodie", 10000, "/img/hoodie_hombre_negro.png");
-const polera = new Producto(003, "Polera", 7000, "/img/polera_hombre_negro.png");
-const remera = new Producto(004, "Remera", 4500, "/img/remera_hombre_negro.png");
-
-
-// Array con el stock de productos  
-
-const productos = [chomba, hoodie, polera, remera];
-
 // Array con el carrito de compras
 
 let carrito = []; // Se inicializa vacío porque inicialmente no hay ningun producto en la lista de compra.
@@ -30,15 +8,28 @@ if (localStorage.getItem("carrito")) {
     carrito = JSON.parse(localStorage.getItem("carrito"));
 }
 
-/* Cargo  el array de productos de forma dinámica.
-Modifico el DOM mostrando los productos en el div.contenedorProductos:  */
+/* Modifico el DOM mostrando los productos en el div.contenedorProductos:  */
 
 const contenedorProductos = document.getElementById("contenedorProductos");
 
+/* Cargo  de productos consumiendo datos de un .JSON local. */
+const catalogoTienda = "json/catalogo.json"; 
+
+fetch(catalogoTienda)
+    .then(res => res.json())
+    .then((productos) => {
+        mostrarProductos(productos);
+    })
+    
+    .catch(error => console.log(error))
+    .finally( () => console.log("Proceso Finalizado"))
+
 /* Función mostrarProductos: va a iterar sobre el array de productos y va a ir pintando las cards en el div.contenedorProductos */
 
-const mostrarProductos = () => {
-    productos.forEach((producto) => {   // creo una card en cada iteración del loop
+const mostrarProductos = async () => {
+    const respuesta = await fetch(catalogoTienda);
+    const productosJson = await respuesta.json();
+    productosJson.forEach( producto => {   // creo una card en cada iteración del loop
         const card = document.createElement("div");
         card.classList.add("col-xl-3", "col-md-6", "col-xs-12");
         card.innerHTML = `
@@ -49,8 +40,7 @@ const mostrarProductos = () => {
                     <p class="card-text"> ${producto.precio} </p>
                     <button class="btn colorBoton" id="boton${producto.id}"> Agregar al Carrito </button>  
                 </div>
-            </div>
-        `
+            </div> `
 
         //Se generó un id dinámico, diferente para cada card de cada producto. Esto es para vincular con futuros eventos (agregar, eliminar).
 
@@ -66,18 +56,21 @@ const mostrarProductos = () => {
 
 //Función para agregar productos al carrito pero evitando la carga de productos repetidos: 
 
-const agregarAlCarrito = (id) => {
-    const producto = productos.find((producto) => producto.id === id);
+const agregarAlCarrito = async (id) => {
+    const respuesta = await fetch(catalogoTienda);
+    const productosJson = await respuesta.json();
+
+    const producto = productosJson.find((producto) => producto.id === id);
     const productoEnCarrito = carrito.find((producto) => producto.id === id);
     
-    productoEnCarrito ? productoEnCarrito.cantidad++ 
-    : carrito.push(producto);
-    localStorage.setItem("carrito",JSON.stringify(carrito));
-    
+    if (productoEnCarrito) {
+        productoEnCarrito.cantidad++;
+    } else {
+        carrito.push(producto);
+        localStorage.setItem("carrito",JSON.stringify(carrito));
+    }
     calcularTotal();
 }
-
-mostrarProductos();
 
 //Para mostrar el carrito de compras: 
 
@@ -90,8 +83,10 @@ verCarrito.addEventListener("click", () => {
 });
 
 //Función para mostrar el carrito: 
+const mostrarCarrito = async () => {
+    const respuesta = await fetch(catalogoTienda);
+    const productosJson = await respuesta.json();
 
-const mostrarCarrito = () => {
     contenedorCarrito.innerHTML="";  // Las "" evitan que se estén duplicando las cards cada vez que hago click en ver carrito.
     carrito.forEach((producto) => {
         const card = document.createElement("div");
@@ -116,7 +111,6 @@ const mostrarCarrito = () => {
     })
     calcularTotal();
 }
-
 
 //Función para eliminar un producto del carrito por su id: 
 
@@ -148,23 +142,21 @@ const eliminarTodoElCarrito = () => {
     localStorage.clear();
 }
 
-// Usar la libreria sweet alert para mostrar una alerta de que se vació el carrito
+// Vaciar carrito - Uso la libreria sweet alert para mostrar que se vació el carrito.
 
 const botonVaciar = document.getElementById("vaciarCarrito");
 botonVaciar.addEventListener("click", () => {
-    swal.fire( {
-        title: "Ahora tu carrito está vacío",
-        text: "Que lástima nos da",
+    Swal.fire({
+        title: "Listo! Se ha vaciado el carrito",
+        text: 'Continúa agregando productos',
         icon: "warning",
-        imageUrl: "https://picsum.photos/200",
-        confirmButtonText: "Seguir comprando",
-        confirmButtonColor: "#d33",
-        background: "#b4b4b4",
-    })
+        imageWidth: 400,
+        imageHeight: 200,
+        imageAlt: 'Custom image',
+      })
 });
 
 //Mensaje con monto total de la compra 
-
 const total = document.getElementById("total");
 
 const calcularTotal = () => {
@@ -172,6 +164,19 @@ const calcularTotal = () => {
     carrito.forEach((producto) => {
         totalCompra += producto.precio * producto.cantidad;
     })
-
     total.innerHTML = ` $${totalCompra}`;
 }
+
+//Finalizar compra -  Uso la libreria sweet alert para mostrar que finalizó el proceso de compra.
+
+const botonFinalizar = document.getElementById("finalizarCompra");
+botonFinalizar.addEventListener("click", () => {
+    Swal.fire({
+        title: "Listo! Finalizaste tu compra",
+        text: 'Gracias por elegir nuestra tienda',
+        icon: "success",
+        imageWidth: 400,
+        imageHeight: 200,
+        imageAlt: 'Custom image',
+      })
+});
